@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wanija Kirula Examination Result Portal</title>
+
+<style>
+body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background:#f4f6f9;
+}
+
+header{
+    background:#002147;
+    color:white;
+    text-align:center;
+    padding:15px;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.container{
+    max-width:800px;
+    margin:20px auto;
+    background:white;
+    padding:20px;
+    border-radius:8px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+
+/* 7 input boxes for index number */
+.index-container{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-top:15px;
+}
+
+.index-box{
+    width:30px;
+    height:35px;
+    text-align:center;
+    font-size:18px;
+    border:1px solid #ccc;
+    border-radius:5px;
+    outline:none;
+    transition:0.3s;
+}
+
+.index-box:focus{
+    border-color:#002147;
+    box-shadow:0 0 5px rgba(0,33,71,0.3);
+}
+
+/* Search button styling */
+button{
+    width:100%;
+    padding:12px;
+    font-size:16px;
+    font-weight:bold;
+    background:#002147;
+    color:white;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    transition:0.3s;
+    margin-top:15px;
+}
+
+button:hover{
+    background:#0080ff;
+    transform:translateY(-2px);
+}
+
+/* Result details */
+.details{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:15px;
+}
+
+.details div{
+    background:#f2f2f2;
+    padding:8px;
+    border-radius:5px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th, td{
+    border:1px solid #ddd;
+    padding:8px;
+    text-align:center;
+}
+
+th{
+    background:#002147;
+    color:white;
+}
+
+@media(max-width:600px){
+    .details{
+        grid-template-columns:1fr;
+    }
+}
+
+#loadingScreen{
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:rgba(255,255,255,0.9);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+    top:0;
+    left:0;
+}
+
+.loading-box{
+    text-align:center;
+    font-family:Arial;
+}
+
+.spinner{
+    width:50px;
+    height:50px;
+    border:5px solid #ddd;
+    border-top:5px solid #002147;
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+    margin:0 auto 15px;
+}
+
+@keyframes spin{
+    0%{transform:rotate(0deg);}
+    100%{transform:rotate(360deg);}
+}
+
+/* PRINT ONLY RESULT SECTION */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #resultBox, #resultBox * {
+        visibility: visible;
+    }
+    #resultBox {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    button {
+        display: none;
+    }
+    header {
+        display: none;
+    }
+}
+</style>
+</head>
+
+<script>
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
+
+document.onkeydown = function(e) {
+    if (e.keyCode == 123) { // F12
+        return false;
+    }
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 73) { // Ctrl+Shift+I
+        return false;
+    }
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 74) { // Ctrl+Shift+J
+        return false;
+    }
+    if (e.ctrlKey && e.keyCode == 85) { // Ctrl+U
+        return false;
+    }
+};
+</script>
+
+<body>
+
+<header>Wanija Kirula Examination Result Portal</header>
+
+<!-- Loading Overlay -->
+<div id="loadingScreen" style="display:none;">
+    <div class="loading-box">
+        <div class="spinner"></div>
+        <p>Searching Results...</p>
+    </div>
+</div>
+
+<div class="container">
+
+<h3>Check Examination Result</h3>
+
+<!-- 7 input boxes for index number -->
+<div class="index-container">
+    <input type="text" maxlength="1" class="index-box" />
+    <input type="text" maxlength="1" class="index-box" />
+    <input type="text" maxlength="1" class="index-box" />
+    <input type="text" maxlength="1" class="index-box" />
+    <input type="text" maxlength="1" class="index-box" />
+    <input type="text" maxlength="1" class="index-box" />
+    <input type="text" maxlength="1" class="index-box" />
+</div>
+
+<button onclick="searchresult()">Search Result</button>
+
+<p id="errorMessage" style="color:red; display:none; margin-top:10px;"></p>
+
+<div id="resultBox" style="display:none;">
+<h2 style="text-align:center;">WANIJA KIRULA EXAMINATION RESULTS SHEET</h2>
+
+<div class="details" id="details"></div>
+
+<table>
+<thead>
+<tr>
+<th>Subject</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody id="resultTable"></tbody>
+</table>
+
+<button onclick="window.print()">Print Result Sheet</button>
+
+</div>
+
+</div>
+
+<!-- Supabase CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7"></script>
+
+<script>
+// 🔥 PASTE YOUR SUPABASE DETAILS HERE
+const SUPABASE_URL = "https://xtwslyvuaxnhijggavmm.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0d3NseXZ1YXhuaGlqZ2dhdm1tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3ODUyODEsImV4cCI6MjA4NjM2MTI4MX0.CSALFfd972Rx-OIu-QTgvzkQTX8E_3jKHl_sxR7N6Lc";
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// 🔍 SEARCH FUNCTION
+async function searchresult(){
+    const boxes = document.querySelectorAll(".index-box");
+    let index = "";
+    boxes.forEach(b => index += b.value);
+
+    if(index.length !== 7){
+        const errorMsg = document.getElementById("errorMessage");
+        errorMsg.innerText = "Please enter complete 7-digit Index Number!";
+        errorMsg.style.display = "block";
+        return;
+    }
+
+    // 🔥 SHOW LOADING
+    document.getElementById("loadingScreen").style.display = "flex";
+    document.getElementById("resultBox").style.display="none";
+    document.getElementById("errorMessage").style.display="none";
+
+    const { data, error } = await supabase
+        .from('results')
+        .select('*')
+        .eq('index_no', index)
+        .single();
+
+    // 🔥 HIDE LOADING
+    document.getElementById("loadingScreen").style.display = "none";
+
+    if(error || !data){
+        const errorMsg = document.getElementById("errorMessage");
+        errorMsg.innerText = "Result Not Found!";
+        errorMsg.style.display = "block";
+        return;
+    }
+
+    document.getElementById("resultBox").style.display="block";
+
+    document.getElementById("details").innerHTML = `
+        <div><strong>Examination:</strong> ${data.examination}</div>
+        <div><strong>Year:</strong> ${data.year}</div>
+        <div><strong>Name:</strong> ${data.name}</div>
+        <div><strong>Index No:</strong> ${data.index_no}</div>
+        <div><strong>NIC No:</strong> ${data.nic}</div>
+        <div><strong>Acc Rank:</strong> ${data.acc_rank}</div>
+        <div><strong>Econ Rank:</strong> ${data.econ_rank}</div>
+        <div><strong>BS Rank:</strong> ${data.bs_rank}</div>
+    `;
+
+    document.getElementById("resultTable").innerHTML = `
+        <tr><td>Accounting</td><td>${data.acc_grade}</td></tr>
+        <tr><td>Economics</td><td>${data.econ_grade}</td></tr>
+        <tr><td>Business Studies</td><td>${data.bs_grade}</td></tr>
+    `;
+}
+
+// 🔹 Auto focus next box
+const boxes = document.querySelectorAll(".index-box");
+boxes.forEach((box, index)=>{
+    box.addEventListener("input", ()=>{
+        if(box.value.length === 1 && index < boxes.length - 1){
+            boxes[index + 1].focus();
+        }
+    });
+
+    box.addEventListener("keydown", (e)=>{
+        if(e.key === "Backspace" && box.value === "" && index > 0){
+            boxes[index - 1].focus();
+        }
+    });
+});
+</script>
+
+</body>
+</html>

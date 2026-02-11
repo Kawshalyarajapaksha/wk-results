@@ -30,28 +30,51 @@ header{
     box-shadow:0 5px 20px rgba(0,0,0,0.1);
 }
 
-input{
-    width: 780px;
-    padding:10px;
-    margin:8px 0;
-    border:1px solid #ccc;
-    border-radius:5px;
+/* 7 input boxes for index number */
+.index-container{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-top:15px;
 }
 
+.index-box{
+    width:40px;
+    height:45px;
+    text-align:center;
+    font-size:18px;
+    border:1px solid #ccc;
+    border-radius:5px;
+    outline:none;
+    transition:0.3s;
+}
+
+.index-box:focus{
+    border-color:#002147;
+    box-shadow:0 0 5px rgba(0,33,71,0.3);
+}
+
+/* Search button styling */
 button{
     width:100%;
-    padding:10px;
+    padding:12px;
+    font-size:16px;
+    font-weight:bold;
     background:#002147;
     color:white;
     border:none;
-    border-radius:5px;
+    border-radius:6px;
     cursor:pointer;
+    transition:0.3s;
+    margin-top:15px;
 }
 
 button:hover{
     background:#0080ff;
+    transform:translateY(-2px);
 }
 
+/* Result details */
 .details{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -123,35 +146,29 @@ th{
 
 /* PRINT ONLY RESULT SECTION */
 @media print {
-
     body * {
         visibility: hidden;
     }
-
     #resultBox, #resultBox * {
         visibility: visible;
     }
-
     #resultBox {
         position: absolute;
         left: 0;
         top: 0;
         width: 100%;
     }
-
     button {
         display: none;
     }
-
     header {
         display: none;
     }
 }
-
 </style>
 </head>
-<script>
 
+<script>
 document.addEventListener('contextmenu', function(e) {
     e.preventDefault();
 });
@@ -172,8 +189,6 @@ document.onkeydown = function(e) {
 };
 </script>
 
-
-
 <body>
 
 <header>Wanija Kirula Examination Result Portal</header>
@@ -186,19 +201,27 @@ document.onkeydown = function(e) {
     </div>
 </div>
 
-
 <div class="container">
 
 <h3>Check Examination Result</h3>
 
-<input type="text" id="indexInput" placeholder="Enter Index Number">
+<!-- 7 input boxes for index number -->
+<div class="index-container">
+    <input type="text" maxlength="1" class="index-box" />
+    <input type="text" maxlength="1" class="index-box" />
+    <input type="text" maxlength="1" class="index-box" />
+    <input type="text" maxlength="1" class="index-box" />
+    <input type="text" maxlength="1" class="index-box" />
+    <input type="text" maxlength="1" class="index-box" />
+    <input type="text" maxlength="1" class="index-box" />
+</div>
+
 <button onclick="searchresult()">Search Result</button>
 
 <p id="errorMessage" style="color:red; display:none; margin-top:10px;"></p>
 
 <div id="resultBox" style="display:none;">
 <h2 style="text-align:center;">WANIJA KIRULA EXAMINATION RESULTS SHEET</h2>
-    
 
 <div class="details" id="details"></div>
 
@@ -222,18 +245,24 @@ document.onkeydown = function(e) {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7"></script>
 
 <script>
-
 // 🔥 PASTE YOUR SUPABASE DETAILS HERE
 const SUPABASE_URL = "https://xtwslyvuaxnhijggavmm.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0d3NseXZ1YXhuaGlqZ2dhdm1tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3ODUyODEsImV4cCI6MjA4NjM2MTI4MX0.CSALFfd972Rx-OIu-QTgvzkQTX8E_3jKHl_sxR7N6Lc";
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-
 // 🔍 SEARCH FUNCTION
 async function searchresult(){
+    const boxes = document.querySelectorAll(".index-box");
+    let index = "";
+    boxes.forEach(b => index += b.value);
 
-    const index = document.getElementById("indexInput").value;
+    if(index.length !== 7){
+        const errorMsg = document.getElementById("errorMessage");
+        errorMsg.innerText = "Please enter complete 7-digit Index Number!";
+        errorMsg.style.display = "block";
+        return;
+    }
 
     // 🔥 SHOW LOADING
     document.getElementById("loadingScreen").style.display = "flex";
@@ -276,6 +305,21 @@ async function searchresult(){
     `;
 }
 
+// 🔹 Auto focus next box
+const boxes = document.querySelectorAll(".index-box");
+boxes.forEach((box, index)=>{
+    box.addEventListener("input", ()=>{
+        if(box.value.length === 1 && index < boxes.length - 1){
+            boxes[index + 1].focus();
+        }
+    });
+
+    box.addEventListener("keydown", (e)=>{
+        if(e.key === "Backspace" && box.value === "" && index > 0){
+            boxes[index - 1].focus();
+        }
+    });
+});
 </script>
 
 </body>

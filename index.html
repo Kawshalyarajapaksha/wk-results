@@ -191,7 +191,7 @@ document.onkeydown = function(e) {
 
 <body>
 
-<header>Wanija Kirula Examination Result Portal</header>
+<header>WANIJA KIRULA EXAMINATION RESULT PORTAL</header>
 
 <!-- Loading Overlay -->
 <div id="loadingScreen" style="display:none;">
@@ -207,14 +207,15 @@ document.onkeydown = function(e) {
 
 <!-- 7 input boxes for index number -->
 <div class="index-container">
-    <input type="text" maxlength="1" class="index-box" />
-    <input type="text" maxlength="1" class="index-box" />
-    <input type="text" maxlength="1" class="index-box" />
-    <input type="text" maxlength="1" class="index-box" />
-    <input type="text" maxlength="1" class="index-box" />
-    <input type="text" maxlength="1" class="index-box" />
-    <input type="text" maxlength="1" class="index-box" />
+    <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="index-box" />
+    <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="index-box" />
+    <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="index-box" />
+    <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="index-box" />
+    <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="index-box" />
+    <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="index-box" />
+    <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="index-box" />
 </div>
+
 
 <button onclick="searchresult()">Search Result</button>
 
@@ -309,10 +310,13 @@ async function searchresult(){
 const boxes = document.querySelectorAll(".index-box");
 boxes.forEach((box, index)=>{
     box.addEventListener("input", ()=>{
-        if(box.value.length === 1 && index < boxes.length - 1){
-            boxes[index + 1].focus();
-        }
-    });
+    // Remove non-numbers
+    box.value = box.value.replace(/[^0-9]/g, '');
+
+    if(box.value.length === 1 && index < boxes.length - 1){
+        boxes[index + 1].focus();
+    }
+});
 
     box.addEventListener("keydown", (e)=>{
         if(e.key === "Backspace" && box.value === "" && index > 0){

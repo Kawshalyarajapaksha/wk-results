@@ -223,6 +223,12 @@ async function searchresult() {
         return;
     }
 
+    supabase
+    .from('results')
+    .select('*')
+    .eq('index_no', index)
+    .limit(1)
+    
     // Check cache first
     if(resultCache[index]){
         displayResult(resultCache[index]);

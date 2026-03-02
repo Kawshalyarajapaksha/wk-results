@@ -6,138 +6,109 @@
 <title>WANIJA KIRULA EXAMINATION RESULT PORTAL</title>
 <link rel="icon" type="image/png" href="crown.png">
 <style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#f4f6f9;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 10px; /* small padding for mobile */
 }
 
 /* Card styling */
-.card{
-  background:white;
-  width:90%;
-  max-width:500px;
-  padding:30px;
-  border-radius:12px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.1);
-  text-align:center;
-  position:relative;
+.card {
+  background: #fff;
+  width: 100%;
+  max-width: 400px; /* responsive width */
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  text-align: center;
 }
 
 /* Buttons */
-.batch-btn{
-  width:100%;
-  padding:14px;
-  margin:10px 0;
-  font-size:16px;
-  font-weight:bold;
-  background:#002147;
-  color:white;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  transition:0.3s;
+.batch-btn {
+  width: 100%;
+  padding: 14px;
+  margin: 10px 0;
+  font-size: 16px;
+  font-weight: bold;
+  background: #002147;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
 }
-.batch-btn:hover{
-  background:#0080ff;
-  transform:translateY(-2px);
-}
-
-/* Loader overlay */
-.loader-overlay {
-  position: absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background: rgba(255,255,255,0.95);
-  display:flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border-radius:12px;
-  display: none; /* Hide initially */
+.batch-btn:hover {
+  background: #0080ff;
+  transform: translateY(-2px);
 }
 
-.spinner {
-  border:5px solid #f3f3f3;
-  border-top:5px solid #002147;
-  border-radius:50%;
-  width:50px;
-  height:50px;
-  animation: spin 1s linear infinite;
-  margin-bottom:15px;
+/* Loader text */
+#loaderText {
+  display: none;
+  margin-top: 15px;
+  font-size: 16px;
+  color: #002147;
 }
 
-@keyframes spin {
-  0% {transform: rotate(0deg);}
-  100% {transform: rotate(360deg);}
+/* Footer */
+footer {
+  margin-top: 20px;
+  font-size: 12px;
+  color: gray;
 }
 
-footer{
-  margin-top:20px;
-  font-size:12px;
-  color:gray;
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .card {
+    padding: 20px;
+  }
+  .batch-btn {
+    font-size: 14px;
+    padding: 12px;
+  }
+  #loaderText {
+    font-size: 14px;
+  }
 }
 </style>
 </head>
 <body>
 
 <div class="card">
-  <img src="crownload.png" class="logo" style="width:70px; margin-bottom:2px;">
+  <img src="crownload.png" class="logo" style="width:70px; margin-bottom:10px;">
   <h2>WANIJA KIRULA <br>EXAMINATION RESULT PORTAL</h2>
   <p>Select Your Examination Batch to Continue</p>
 
   <button class="batch-btn" onclick="selectBatch('2026')">Batch 2026</button>
   <button class="batch-btn" onclick="selectBatch('2027')">Batch 2027</button>
 
+  <!-- Loader text -->
+  <p id="loaderText">Processing your batch… please wait...</p>
+
   <footer>© 2026 Wanija Kirula Examination Portal</footer>
+    </div>
 
-  <!-- Loader overlay -->
-  <div class="loader-overlay" id="loaderOverlay">
-    <div class="spinner"></div>
-    <p style="color:#002147; font-size:16px;">Processing your batch… please wait...</p>
-  </div>
-</div>
+    <script>
+    function selectBatch(batch){
+    if(!batch) return;
 
-<script>
-const loader = document.getElementById('loaderOverlay');
+    // Save batch
+    localStorage.setItem("selectedBatch", batch);
 
-// pageshow event ensures this works even when coming back from results.html
-window.addEventListener('pageshow', (event) => {
-  const showLoading = sessionStorage.getItem('showLoading');
+    // Show loader text
+    const loader = document.getElementById('loaderText');
+    loader.style.display = 'block';
 
-  // Only show loader if user just selected batch
-  if(loader && showLoading === 'true'){
-    loader.style.display = 'flex';
-
-    // Clear flag so back button won't show loader again
-    sessionStorage.removeItem('showLoading');
-  }
-});
-
-// When user selects a batch
-function selectBatch(batch){
-  if(!batch) return;
-
-  // Save selected batch
-  localStorage.setItem("selectedBatch", batch);
-
-  // Set flag to show loader on this selection
-  sessionStorage.setItem('showLoading', 'true');
-
-  // Show loader
-  loader.style.display = 'flex';
-
-  // Redirect to results page after short delay
-  setTimeout(() => {
-    window.location.href = "results.html";
-  }, 1000);
- }
+    // Redirect to results page after short delay
+    setTimeout(() => {
+        window.location.href = "results.html";
+    }, 1000); // 1 second delay
+}
 </script>
 
 </body>

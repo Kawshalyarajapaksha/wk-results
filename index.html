@@ -3,362 +3,121 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WANIJA KIRULA EXAMINATION RESULT PORTAL</title>
+<title>Select Examination Batch</title>
 <link rel="icon" type="image/png" href="crown.png">
-<!-- html2canvas for capturing result sheet -->
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
 <style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #f4f6f9;
-    }
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#f4f6f9;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
 
-    header {
-        background: #002147;
-        color: white;
-        text-align: center;
-        padding: 15px;
-        font-size: 20px;
-        font-weight: bold;
-    }
+/* Card styling */
+.card{
+  background:white;
+  width:90%;
+  max-width:500px;
+  padding:30px;
+  border-radius:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.1);
+  text-align:center;
+  position:relative;
+}
 
-    .container {
-        max-width: 800px;
-        margin: 20px auto;
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    }
+/* Buttons */
+.batch-btn{
+  width:100%;
+  padding:14px;
+  margin:10px 0;
+  font-size:16px;
+  font-weight:bold;
+  background:#002147;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  transition:0.3s;
+}
+.batch-btn:hover{
+  background:#0080ff;
+  transform:translateY(-2px);
+}
 
-    .index-container {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 15px;
-    }
+/* Loader overlay */
+.loader-overlay {
+  position: absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background: rgba(255,255,255,0.95);
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius:12px;
+  display: none; /* Hide initially */
+}
 
-    .index-box {
-        width: 30px;
-        height: 35px;
-        text-align: center;
-        font-size: 18px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
+.spinner {
+  border:5px solid #f3f3f3;
+  border-top:5px solid #002147;
+  border-radius:50%;
+  width:50px;
+  height:50px;
+  animation: spin 1s linear infinite;
+  margin-bottom:15px;
+}
 
-    button {
-        width: 100%;
-        padding: 12px;
-        font-size: 16px;
-        font-weight: bold;
-        background: #002147;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        margin-top: 15px;
-    }
+@keyframes spin {
+  0% {transform: rotate(0deg);}
+  100% {transform: rotate(360deg);}
+}
 
-    button:hover {
-        background: #0080ff;
-    }
-
-    .details {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-top: 15px;
-    }
-
-    .details div {
-        background: #f2f2f2;
-        padding: 8px;
-        border-radius: 5px;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 15px;
-    }
-
-    th, td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: center;
-    }
-
-    th {
-        background: #002147;
-        color: white;
-    }
-
-    /* Loading screen */
-    #loadingScreen {
-        position: fixed;
-        top:0;
-        left:0;
-        width: 100%;
-        height: 100%;
-        background: rgba(255,255,255,0.9);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-    }
-
-    .spinner {
-        width: 50px;
-        height: 50px;
-        border: 5px solid #ddd;
-        border-top: 5px solid #002147;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        margin: 0 auto 15px;
-    }
-
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    /* Print styles */
-    @media print {
-        body * { visibility: hidden; }
-        #resultBox, #resultBox * { visibility: visible; }
-        #resultBox { position: absolute; left:0; top:0; width:100%; }
-        button, header { display: none; }
-    }
-
-    /* Result Box Animation */
-    @keyframes fadeSlideIn {
-    0% {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    }
-
-    #resultBox.animated {
-    animation: fadeSlideIn 0.6s ease-out forwards;
-    }
+footer{
+  margin-top:20px;
+  font-size:12px;
+  color:gray;
+}
 </style>
-    </head>
+</head>
 <body>
 
-<header>WANIJA KIRULA EXAMINATION RESULT PORTAL</header>
+<div class="card">
+  <img src="crownload.png" class="logo" style="width:70px; margin-bottom:2px;">
+  <h2>WANIJA KIRULA <br>EXAMINATION RESULT PORTAL</h2>
+  <p>Select Your Examination Batch to Continue</p>
 
-<!-- Loading Screen -->
-<div id="loadingScreen">
-    <div class="loading-box">
-        <div class="spinner"></div>
-        <p style="font-weight:bold;">Searching Results...</p>
-    </div>
+  <button class="batch-btn" onclick="selectBatch('2026')">Batch 2026</button>
+  <button class="batch-btn" onclick="selectBatch('2027')">Batch 2027</button>
+
+  <footer>© 2026 Wanija Kirula Examination Portal</footer>
+
+  <!-- Loader overlay -->
+  <div class="loader-overlay" id="loaderOverlay">
+    <div class="spinner"></div>
+    <p style="color:#002147; font-size:16px;">Processing your batch… please wait...</p>
+  </div>
 </div>
 
-<div class="container">
-    <h3 style="text-align:center; margin-bottom:5px;">Enter Your Index Number</h3>
-    <p style="text-align:center; color:gray; font-size:14px;">Please enter your 7-digit examination index number below</p>
-
-    <!-- Index input boxes -->
-    <div class="index-container">
-        <input maxlength="1" class="index-box" inputmode="numeric" pattern="[0-9]*" />
-        <input maxlength="1" class="index-box" inputmode="numeric" pattern="[0-9]*" />
-        <input maxlength="1" class="index-box" inputmode="numeric" pattern="[0-9]*" />
-        <input maxlength="1" class="index-box" inputmode="numeric" pattern="[0-9]*" />
-        <input maxlength="1" class="index-box" inputmode="numeric" pattern="[0-9]*" />
-        <input maxlength="1" class="index-box" inputmode="numeric" pattern="[0-9]*" />
-        <input maxlength="1" class="index-box" inputmode="numeric" pattern="[0-9]*" />
-    </div>
-
-    <button onclick="searchresult()">Search Result</button>
-    <p id="errorMessage" style="color:red; display:none;"></p>
-
-    <!-- Result Box -->
-    <div id="resultBox" style="display:none;">
-        <h2 style="text-align:center;">WANIJA KIRULA EXAMINATION RESULTS SHEET</h2>
-        <div class="details" id="details"></div>
-        <table>
-            <thead>
-                <tr><th>Subject</th><th>Result</th><th>Rank</th></tr>
-            </thead>
-            <tbody id="resultTable"></tbody>
-        </table>
-        <button onclick="window.print()">Print Result Sheet</button>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7">
-
-</script>
 <script>
-    // ===================== Supabase Setup =====================
-    const SUPABASE_URL = "https://xtwslyvuaxnhijggavmm.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0d3NseXZ1YXhuaGlqZ2dhdm1tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3ODUyODEsImV4cCI6MjA4NjM2MTI4MX0.CSALFfd972Rx-OIu-QTgvzkQTX8E_3jKHl_sxR7N6Lc";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+function selectBatch(batch){
+  // Save batch
+  localStorage.setItem("selectedBatch", batch);
 
-// ===================== Client-side Cache =====================
-const resultCache = {};
+  // Show loader
+  document.getElementById('loaderOverlay').style.display = 'flex';
 
-// ===================== On Page Load =====================
-window.addEventListener("load", () => {
-    document.querySelector(".index-box").focus();
-});
-
-// ===================== Search Function =====================
-async function searchresult() {
-    const boxes = document.querySelectorAll(".index-box");
-    let index = "";
-    boxes.forEach(b => index += b.value);
-
-    if(index.length !== 7) {
-        showError("Enter 7-digit Index Number");
-        return;
-    }
-
-    supabase
-    .from('results')
-    .select('*')
-    .eq('index_no', index)
-    .limit(1)
-    
-    // Check cache first
-    if(resultCache[index]){
-        displayResult(resultCache[index]);
-        return;
-    }
-
-    // Show loading screen
-    document.getElementById("loadingScreen").style.display = "flex";
-    document.getElementById("resultBox").style.display = "none";
-    document.getElementById("errorMessage").style.display = "none";
-
-    // Fetch from Supabase
-    const { data, error } = await supabase.from('results').select('*').eq('index_no', index).single();
-
-    // Hide loading
-    document.getElementById("loadingScreen").style.display = "none";
-
-    if(error || !data){
-        showError("Result Not Found");
-        clearIndexBoxes(true);
-        return;
-    }
-
-    // Save to cache
-    resultCache[index] = data;
-
-    // Display result
-    displayResult(data);
-    clearIndexBoxes(false);
+  // Simulate delay then redirect
+  setTimeout(() => {
+    window.location.href = "results.html";
+  }, 1200); // 1.2 seconds
 }
+</script>
 
-// ===================== Display Result =====================
-function displayResult(data) {
-
-    // ===================== Auto Scroll to Result =====================
-    function scrollToResult(){
-    const resultBox = document.getElementById("resultBox");
-    if(resultBox && resultBox.style.display !== "none"){
-        resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-    }
-
-        // Add animation class
-    resultBox.classList.remove("animated"); // Reset first
-    void resultBox.offsetWidth; // Trigger reflow
-    resultBox.classList.add("animated");
-
-    document.getElementById("resultBox").style.display = "block";
-
-    document.getElementById("details").innerHTML = `
-        <div><strong>Examination:</strong> ${data.examination}</div>
-        <div><strong>Year:</strong> ${data.year}</div>
-        <div><strong>Name:</strong> ${data.name}</div>
-        <div><strong>Index No:</strong> ${data.index_no}</div>
-        <div><strong>District Rank:</strong> ${data.district_rank ?? '-'}</div>
-        <div><strong>Overall Rank:</strong> ${data.overall_rank ?? '-'}</div>
-    `;
-
-    document.getElementById("resultTable").innerHTML = `
-        <tr><td>Accounting</td><td>${data.acc_grade}</td><td>${data.acc_rank ?? '-'}</td></tr>
-        <tr><td>Economics</td><td>${data.econ_grade}</td><td>${data.econ_rank ?? '-'}</td></tr>
-        <tr><td>Business Studies</td><td>${data.bs_grade}</td><td>${data.bs_rank ?? '-'}</td></tr>
-    `;
-    scrollToResult();
-}
-
-// ===================== Clear Inputs =====================
-function clearIndexBoxes(shouldFocus=false){
-    document.querySelectorAll(".index-box").forEach(box=>box.value="");
-    if(shouldFocus) document.querySelector(".index-box").focus();
-}
-
-// ===================== Show Error =====================
-function showError(msg){
-    const el = document.getElementById("errorMessage");
-    el.innerText = msg;
-    el.style.display = "block";
-}
-
-// ===================== Auto Focus Logic =====================
-const boxes = document.querySelectorAll(".index-box");
-boxes.forEach((box, index) => {
-    box.addEventListener("input", () => {
-        box.value = box.value.replace(/[^0-9]/g, '');
-        if(box.value.length === 1 && index < boxes.length - 1) boxes[index + 1].focus();
-    });
-
-    box.addEventListener("keydown", e => {
-        if(e.key === "Backspace" && box.value === "" && index > 0) boxes[index - 1].focus();
-    });
-});
-
-// ===================== Enter Key to Search =====================
-document.addEventListener("keydown", e => {
-    if(e.key === "Enter") searchresult();
-});
-
-// ===================== Capture Result Sheet =====================
-async function captureResultSheet(){
-    const resultBox = document.getElementById("resultBox");
-    if(!resultBox || resultBox.style.display === "none") return;
-
-    const canvas = await html2canvas(resultBox);
-    const image = canvas.toDataURL("image/png");
-
-    const link = document.createElement("a");
-    link.href = image;
-    link.download = "result_sheet.png";
-    link.click();
-}
-// ===================== Disable Right Click =====================
-document.addEventListener("contextmenu", function(e){
-    e.preventDefault();
-    //alert("Right-click is disabled on this page!");
-});
-
-// ===================== Disable Developer Tools =====================
-document.addEventListener("keydown", function(e) {
-    // F12
-    if(e.key === "F12") e.preventDefault();
-    // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
-    if(e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J" || e.key === "C")) e.preventDefault();
-    // Ctrl+U (View Source)
-    if(e.ctrlKey && e.key === "U") e.preventDefault();
-});
-
-// Optional: block certain mouse shortcuts (like Ctrl+Shift+Right Click)
-window.onkeydown = function(e){
-    if(e.ctrlKey && e.shiftKey && e.key === "I") return false;
-};
-        </script>
-    </body>
+</body>
 </html>

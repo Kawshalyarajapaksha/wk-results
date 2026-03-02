@@ -123,6 +123,13 @@ footer {
         window.location.href = "results.html";
     }, 1000);
     }
+    window.addEventListener('DOMContentLoaded', () => {
+    const card = document.querySelector('.card');
+    if(card){
+        // Smooth scroll to card
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    });
     </script>
 </body>
 </html>

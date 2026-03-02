@@ -93,22 +93,29 @@ footer {
   <footer>© 2026 Wanija Kirula Examination Portal</footer>
     </div>
 
-    <script>
+<script>
+
+    const loader = document.getElementById('loaderText');
+
+    // Ensure loader is hidden on page load (back button or normal load)
+    window.addEventListener('DOMContentLoaded', () => {
+    loader.style.display = 'none';
+    });
+
     function selectBatch(batch){
     if(!batch) return;
 
     // Save batch
     localStorage.setItem("selectedBatch", batch);
 
-    // Show loader text
-    const loader = document.getElementById('loaderText');
+    // Show loader text only now
     loader.style.display = 'block';
 
     // Redirect to results page after short delay
     setTimeout(() => {
         window.location.href = "results.html";
-    }, 1000); // 1 second delay
-}
+    }, 1000);
+    }
 </script>
 
 </body>

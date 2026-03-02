@@ -105,14 +105,18 @@ footer{
 </div>
 
 <script>
-// Show loader if coming back from results page
-window.addEventListener('DOMContentLoaded', () => {
-  const loader = document.getElementById('loaderOverlay');
+const loader = document.getElementById('loaderOverlay');
 
-  // Check sessionStorage flag
+// pageshow event ensures this works even when coming back from results.html
+window.addEventListener('pageshow', (event) => {
   const showLoading = sessionStorage.getItem('showLoading');
+
+  // Only show loader if user just selected batch
   if(loader && showLoading === 'true'){
     loader.style.display = 'flex';
+
+    // Clear flag so back button won't show loader again
+    sessionStorage.removeItem('showLoading');
   }
 });
 
@@ -120,26 +124,20 @@ window.addEventListener('DOMContentLoaded', () => {
 function selectBatch(batch){
   if(!batch) return;
 
-  // Save batch
+  // Save selected batch
   localStorage.setItem("selectedBatch", batch);
 
-  // Set flag to show loader on back
+  // Set flag to show loader on this selection
   sessionStorage.setItem('showLoading', 'true');
 
   // Show loader
-  const loader = document.getElementById('loaderOverlay');
   loader.style.display = 'flex';
 
-  // Simulate delay then redirect
+  // Redirect to results page after short delay
   setTimeout(() => {
     window.location.href = "results.html";
-  }, 1000); // 1 second
-}
-
-// Optional: clear flag if needed (not now, to persist on back)
-window.addEventListener('beforeunload', () => {
-sessionStorage.removeItem('showLoading');
-});
+  }, 1000);
+ }
 </script>
 
 </body>

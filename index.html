@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Select Examination Batch</title>
+<title>WANIJA KIRULA EXAMINATION RESULT PORTAL</title>
 <link rel="icon" type="image/png" href="crown.png">
 <style>
 body{
@@ -105,18 +105,41 @@ footer{
 </div>
 
 <script>
+// Show loader if coming back from results page
+window.addEventListener('DOMContentLoaded', () => {
+  const loader = document.getElementById('loaderOverlay');
+
+  // Check sessionStorage flag
+  const showLoading = sessionStorage.getItem('showLoading');
+  if(loader && showLoading === 'true'){
+    loader.style.display = 'flex';
+  }
+});
+
+// When user selects a batch
 function selectBatch(batch){
+  if(!batch) return;
+
   // Save batch
   localStorage.setItem("selectedBatch", batch);
 
+  // Set flag to show loader on back
+  sessionStorage.setItem('showLoading', 'true');
+
   // Show loader
-  document.getElementById('loaderOverlay').style.display = 'flex';
+  const loader = document.getElementById('loaderOverlay');
+  loader.style.display = 'flex';
 
   // Simulate delay then redirect
   setTimeout(() => {
     window.location.href = "results.html";
-  }, 1200); // 1.2 seconds
+  }, 1000); // 1 second
 }
+
+// Optional: clear flag if needed (not now, to persist on back)
+window.addEventListener('beforeunload', () => {
+sessionStorage.removeItem('showLoading');
+});
 </script>
 
 </body>

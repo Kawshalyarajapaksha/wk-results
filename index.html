@@ -185,6 +185,12 @@ Processing your batch… please wait...
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>)
 
 </script>
-
+<script>
+window.onpageshow = function(event) {
+  if (event.persisted) {
+    window.location.reload();
+  }
+};
+</script>
 </body>
 </html>
